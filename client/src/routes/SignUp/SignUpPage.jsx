@@ -14,7 +14,7 @@ const SignUpPage = () => {
 
     return (
         <div className='signUpPage'>
-            <SignUp path="/sign-up" signInUrl="/login" />
+            <SignUp path="/sign-up" signInUrl="/login" redirectUrlComplete="/dashboard" />
         </div>
     )
 }

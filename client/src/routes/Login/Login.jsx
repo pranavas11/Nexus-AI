@@ -15,7 +15,7 @@ const Login = () => {
     return (
         <div className='loginPage'>
             {/* <SignIn path="/login" signUpUrl="/sign-up" forceRedirectUrl="/dashboard" /> */}
-            <SignIn path="/login" signUpUrl="/sign-up" />
+            <SignIn path="/login" signUpUrl="/sign-up" redirectUrlComplete="/dashboard" />
         </div>
     );
 }

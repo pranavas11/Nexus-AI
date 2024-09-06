@@ -1,0 +1,79 @@
+.userImage {
+    text-align: right;
+    max-width: 50%;
+    margin-left: auto;  /* Push the image to the right */
+    padding: 11px;
+}
+
+.user {
+    text-align: right;
+    right: 0%;
+    margin-left: 50%;
+    width: auto;
+}
+
+.endChat {
+    padding-bottom: 100px;
+}
+
+.newForm {
+    width: 100%;
+    max-width: 70%;
+    position: absolute;
+    bottom: 0;
+    background-color: #2c2937;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0px 20px;
+
+    .textInput {
+        flex: 1;
+        padding: 17px;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        color: #ececec;
+        font-size: 15px;
+        resize: none;
+        height: 55px;       /* default height */
+        min-height: 55px;   /* ensures textarea doesn't shrink below 50px */
+        max-height: 190px;  /* max height before scrolling */
+        overflow-y: auto;   /* scroll when content exceeds max height */
+    }
+
+    button, label {
+        border-radius: 50%;
+        background-color: #605e68;
+        border: none;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        img {
+            width: 17px;
+            height: 17px;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .newForm {
+        width: 95%;
+        padding: 8px 15px;
+        gap: 8px;
+    }
+
+    .textInput {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    label img, button img {
+        width: 16px;
+        height: 16px;
+    }
+}
