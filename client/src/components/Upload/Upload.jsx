@@ -21,42 +21,53 @@ const authenticator = async () => {
     }
 };
 
-//const Upload = forwardRef(({ setImg }, ref) => {
-//const Upload = ({ setImg, file }) => {
 const Upload = ({ setImg }) => {
     const ikUploadRef = useRef(null);
 
-    /*useEffect(() => {
-        if (file) {
-            // File is passed as a prop, trigger the upload when file changes
-            console.log('Uploading file via IKUpload:', file);
-        }
-    }, [file]);*/
+    // useEffect(() => {
+    //     if (base64Image) {
+    //         //const response = await
+    //         // Handle the base64 image upload here
+    //         const blob = base64ToBlob(base64Image, "image/png");  // Convert base64 to blob
+    //         //uploadImage(blob);
+    //         onUploadStart(blob);
+    //     }
+    // }, [base64Image]);
 
-    /*// Allow access to the upload function from the parent component via ref
-    useImperativeHandle(ref, () => ({
-        uploadFile: (file) => {
-            if (ikUploadRef.current) {
-                const blob = new Blob([file], { type: file.type });
-                ikUploadRef.current.upload(blob); // Upload file from clipboard
-            }
-        }
-    }));*/
+    // const onUploadStart = (fileBlob) => {
+    //     const fileReader = new FileReader();
+    //     console.log("the fileBlob from upload is: ", fileBlob);
+
+    //     fileReader.onloadend = () => {
+    //         setImg((prev) => ({
+    //             ...prev,
+    //             isLoading: true,
+    //             aiData: {
+    //                 inlineData: {
+    //                     data: fileReader.result.split(",")[1],
+    //                     mimeType: fileBlob.type,
+    //                 },
+    //             },
+    //         }));
+    //     };
+
+    //     fileReader.readAsDataURL(fileBlob);
+    // };
 
     const onError = (err) => {
         console.log("Error: ", err);
+        setImg((prev) => ({ ...prev, isLoading: false, error: err.message }));
     };
 
     const onSuccess = (res) => {
         console.log("Success: ", res);
-        //setImg((prev) => ({ ...prev, isLoading: false, dbData: res }));
-        setImg(res);
-        // setImg((prev) => ({
-        //     ...prev,
-        //     isLoading: false,
-        //     dbData: [...prev.dbData, res], // Store the uploaded image data
-        //     aiData: [...prev.aiData, { text: `Image uploaded: ${res.filePath}`, filePath: res.filePath }],
-        // }));
+        //setImg((prev) => ({ ...prev, isLoading: false, error: "", dbData: res }));
+        setImg((prev) => ({
+            ...prev,
+            isLoading: false,
+            error: "",
+            dbData: [...prev.dbData, res],  // Append the uploaded image to dbData array
+        }));
     };
 
     const onUploadProgress = (progress) => {
@@ -64,87 +75,81 @@ const Upload = ({ setImg }) => {
     };
 
     // const onUploadStart = (evt) => {
-    //     console.log("Start: ", evt);
+    //     console.log("the event in upload is: ", evt);
+    //     const file = evt.target.files[0];
+    //     const reader = new FileReader();
+
+    //     reader.onloadend = () => {
+    //         console.log("File is being processed for upload: ", file);
+    //         setImg((prev) => ({
+    //             ...prev,
+    //             isLoading: true,
+    //             aiData: {
+    //                 inlineData: {
+    //                     data: reader.result.split(",")[1],
+    //                     mimeType: file.type,
+    //                 },
+    //             },
+    //         }));
+    //     };
+
+    //     reader.readAsDataURL(file);
     // };
 
     const onUploadStart = (evt) => {
-        const files = evt.target.files; // Get all files
-        const processedImages = [];
-
-        // Iterate over each file to process multiple images
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
+        console.log("the event in upload is: ", evt);
+        
+        const files = evt.target.files; // Get all selected files
+    
+        // Iterate through the file list
+        Array.from(files).forEach((file) => {
             const reader = new FileReader();
-
+    
             reader.onloadend = () => {
-                // const imageData = {
-                //     data: reader.result.split(",")[1],
-                //     mimeType: file.type,
-                // };
-
-                const imageData = {
-                    text: `Image uploaded: ${file.name}`, // Human-readable description
-                    filePath: reader.result.split(",")[1], // Base64 encoded image data (if needed for AI)
-                    mimeType: file.type,
-                };
-
-                processedImages.push(imageData);
-
-                // After processing all images, update the AI data and image state
-                if (processedImages.length === files.length) {
-                    setImg((prev) => ({
-                        ...prev,
-                        isLoading: true,
-                        aiData: processedImages, // Store all processed images
-                    }));
-                }
+                console.log("File is being processed for upload: ", file);
+                
+                // Append each image data to the state
+                setImg((prev) => ({
+                    ...prev,
+                    isLoading: true,
+                    aiData: [
+                        ...prev.aiData, // Ensure previously uploaded data remains
+                        {
+                            inlineData: {
+                                data: reader.result.split(",")[1],
+                                mimeType: file.type,
+                            },
+                        },
+                    ],
+                }));
             };
-
-            reader.readAsDataURL(file); // Read each file
-        }
-    };
-
-    //console.log("the uploaded file details are: ", file);
-    //console.log("the file name is: ", file.name);
+    
+            // Read each file as Data URL
+            reader.readAsDataURL(file);
+        });
+    };    
 
     return (
         <IKContext urlEndpoint={urlEndpoint} publicKey={publicKey} authenticator={authenticator}>
-            {/* {file && (
-                <IKUpload
-                    fileName={file.name}
-                    file={file} // Pass the file directly to IKUpload
-                    useUniqueFileName={true}
-                    onError={onError}
-                    onSuccess={onSuccess}
-                    onUploadProgress={onUploadProgress}
-                    onUploadStart={onUploadStart}
-                    ref={ikUploadRef || file}
-                    style={{ display: "none" }}
-                />
-            )}
-
-            <label onClick={() => ikUploadRef.current.click() || document.getElementById('fileInput').click()}>
-                <img src="/attachment.png" alt="attachment icon" />
-            </label>
-            <input id="fileInput" type="file" style={{ display: "none" }} /> */}
-
+            {/* {base64Image && (
+                <IKImage path={base64Image} />
+            )} */}
             <IKUpload
                 fileName="image.png"
-                useUniqueFileName={true}
                 onError={onError}
                 onSuccess={onSuccess}
+                useUniqueFileName={true}
                 onUploadProgress={onUploadProgress}
                 onUploadStart={onUploadStart}
-                ref={ikUploadRef}
+                multiple={true}                     // allow multiple file uploads
                 style={{ display: "none" }}
+                ref={ikUploadRef}
             />
-            {
-                <label onClick={() => ikUploadRef.current.click()}>
-                    <img src="/attachment.png" alt="Attach Files" />
-                </label>
-            }
+            <label onClick={() => ikUploadRef.current.click()}>
+                <img src="/attachment.png" alt="Attach Files" />
+            </label>
         </IKContext>
     );
-}/*)*/;
+};
 
 export default Upload;

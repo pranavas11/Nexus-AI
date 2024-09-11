@@ -110,12 +110,17 @@
                 align-items: center;
                 justify-content: center;
                 margin-right: 20px;
+                transition: background-color 0.3s ease;
 
                 img {
                     width: 17px;
                     height: 17px;
                     object-fit: cover;
                 }
+            }
+
+            button.active {
+                background-color: #4CAF50; /* Brighten button when text is detected */
             }
         }
     }
